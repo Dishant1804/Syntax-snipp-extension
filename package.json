@@ -1,0 +1,56 @@
+{
+  "name": "syntax-snipp",
+  "displayName": "syntax-snipp",
+  "description": "Your companion for Do Not Repeat principle",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*",
+    "onUri"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "syntax-snipp.showLoginPopup",
+        "title": "Login"
+      },
+      {
+        "command": "syntax-snipp.authenticate",
+        "title": "Authenticate Syntax Snipp"
+      },
+      {
+        "command": "syntax-snipp.logout",
+        "title": "Logout from syntax snipp" 
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "pnpm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.93.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.9.1"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "express": "^4.21.0"
+  }
+}
