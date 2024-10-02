@@ -38,12 +38,21 @@
       {
         "command": "syntax-snipp.createSnippet",
         "title": "Create Snippet"
+      },
+      {
+        "command": "syntax-snipp.readSnippet",
+        "title": "Get Snippet"
       }
     ],
     "menus": {
       "editor/context": [
         {
           "command": "syntax-snipp.createSnippet",
+          "when": "editorTextFocus",
+          "group": "navigation"
+        },
+        {
+          "command": "syntax-snipp.readSnippet",
           "when": "editorTextFocus",
           "group": "navigation"
         }
