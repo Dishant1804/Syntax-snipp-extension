@@ -4,6 +4,7 @@ const { authenticate } = require('./src/helpers/authenticate.js');
 const { TokenManager } = require('./src/helpers/TokenManager.js');
 const { createSnippet } = require('./src/routes/createsnippet.js');
 const { readSnippet } = require('./src/routes/readsnippet.js');
+const { updateSnippet } = require('./src/routes/updatesnippet.js');
 
 function activate(context) {
   TokenManager.globalState = context.globalState;
@@ -46,6 +47,12 @@ function activate(context) {
       readSnippet();
     })  
   );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('syntax-snipp.updateSnippet' , async () => {
+      updateSnippet();
+    })
+  )
 }
 
 function deactivate() { }

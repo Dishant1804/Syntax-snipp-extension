@@ -42,6 +42,10 @@
       {
         "command": "syntax-snipp.readSnippet",
         "title": "Get Snippet"
+      },
+      {
+        "command": "syntax-snipp.updateSnippet",
+        "title": "Update Snippet"
       }
     ],
     "menus": {
