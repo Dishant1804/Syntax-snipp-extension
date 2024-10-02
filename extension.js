@@ -1,7 +1,7 @@
 const vscode = require('vscode');
+const axios = require('axios');
 const { authenticate } = require('./authenticate.js');
 const { TokenManager } = require('./TokenManager.js');
-
 
 function activate(context) {
   TokenManager.globalState = context.globalState;
@@ -17,7 +17,7 @@ function activate(context) {
             if (newToken) {
               vscode.window.showInformationMessage('Login successful!');
             } else {
-              vscode.window.showErrorMessage('Login failed. Token not set.');
+              vscode.window.showErrorMessage('Login failed. Try again.');
             }
           });
         }
@@ -30,6 +30,67 @@ function activate(context) {
     vscode.commands.registerCommand('syntax-snipp.logout', () => {
       TokenManager.removeToken();
       vscode.window.showInformationMessage('You have been logged out.');
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('syntax-snipp.createSnippet', async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage('No active editor found');
+        return;
+      }
+
+      const selection = editor.selection;
+      const content = editor.document.getText(selection);
+
+      if (!content) {
+        vscode.window.showErrorMessage('No text selected');
+        return;
+      }
+
+      const title = await vscode.window.showInputBox({ prompt: 'Enter snippet title' });
+      if (!title) return;
+
+      const description = await vscode.window.showInputBox({ prompt: 'Enter snippet description' });
+      if (!description) return;
+
+      const tagsInput = await vscode.window.showInputBox({ prompt: 'Enter tags (comma-separated)' });
+      const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
+
+      const language = editor.document.languageId;
+
+      try {
+        const token = TokenManager.getToken();
+        
+        if (!token) {
+          vscode.window.showErrorMessage('You need to log in first');
+          return;
+        }
+
+        const response = await axios.post('http://localhost:3000/api/v1/snippet/createsnippet', {
+          title,
+          content,
+          description,
+          tags,
+          favorite: false,
+          language
+        }, {
+          headers: {
+            'Authorization': token
+          }
+        });
+
+        if (response.data.success) {
+          vscode.window.showInformationMessage('Snippet created successfully');
+        }
+        else{
+          vscode.window.showErrorMessage('create snippet error in route')
+        }
+      } catch (error) {
+        console.error(error);
+        vscode.window.showErrorMessage('Failed to create snippet');
+      }
     })
   );
 }

@@ -3,6 +3,7 @@
   "displayName": "syntax-snipp",
   "description": "Your companion for Do Not Repeat principle",
   "version": "0.0.1",
+  "publisher": "myPublisher",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -33,9 +34,25 @@
       {
         "command": "syntax-snipp.logout",
         "title": "Logout from syntax snipp" 
+      },
+      {
+        "command": "syntax-snipp.createSnippet",
+        "title": "Create Snippet"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "syntax-snipp.createSnippet",
+          "when": "editorTextFocus",
+          "group": "navigation"
+        }
+      ]
+    }
   },
+  "enabledApiProposals": [
+    "contribEditorContentMenu"
+  ],
   "scripts": {
     "lint": "eslint .",
     "pretest": "pnpm run lint",

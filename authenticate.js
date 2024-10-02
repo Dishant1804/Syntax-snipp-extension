@@ -1,12 +1,10 @@
 const vscode = require("vscode");
-// const { apiBaseUrl } = require("./constants.js");
 const express = require("express");
 const { TokenManager } = require("./TokenManager.js");
 
 const authenticate = (fn) => {
   const app = express();
 
-  // Middleware to parse URL-encoded data (optional)
   app.use(express.urlencoded({ extended: true }));
 
   app.get(`/auth/:token`, async (req, res) => {
@@ -21,7 +19,6 @@ const authenticate = (fn) => {
 
     res.send(`<h1>Authentication was successful, you can close this now</h1>`);
 
-    // Close the server after authentication is done
     server.close();
   });
 
