@@ -3,10 +3,19 @@ const vscode = require('vscode');
 
 const { TokenManager } = require('../helpers/TokenManager.js');
 
+const languages = [
+    'javascript', 'python', 'java', 'c', 'c++', 'jsx', 'tsx', 'html', 'css', 'typescript', 'sql', 'php', 'ruby', 'go', 'swift', 'kotlin', 'flutter', 'xml', 'json', 'markdown', 'shell', 'r', 'vue', 'yaml', 'csharp',
+];
+
+const languageMapping = {
+    'jsx': 'javascript',
+    'tsx': 'typescript'
+};
+
 const createSnippet = async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-        vscode.window.showErrorMessage('No active editor. PLease select an active editor');
+        vscode.window.showErrorMessage('No active editor. Please select an active editor');
         return;
     }
 
@@ -27,7 +36,22 @@ const createSnippet = async () => {
     const tagsInput = await vscode.window.showInputBox({ prompt: 'Enter tags (comma-separated)' });
     const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()) : [];
 
-    const language = editor.document.languageId;
+    let currentLanguage = editor.document.languageId;
+    let language;
+
+    if (languages.includes(currentLanguage)) {
+        language = currentLanguage;
+    } else {
+        language = await vscode.window.showQuickPick(languages, {
+            placeHolder: 'Select a language for the snippet'
+        });
+        if (!language) return;
+    }
+
+    //mapping jsx to js and tsx to ts
+    if (languageMapping[language]) {
+        language = languageMapping[language];
+    }
 
     try {
         const token = TokenManager.getToken();
@@ -52,9 +76,8 @@ const createSnippet = async () => {
 
         if (response.data.success) {
             vscode.window.showInformationMessage('Snippet created successfully');
-        }
-        else {
-            vscode.window.showErrorMessage('create snippet error in route')
+        } else {
+            vscode.window.showErrorMessage('Create snippet error in route');
         }
     } catch (error) {
         console.error(error);
