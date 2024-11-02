@@ -55,10 +55,25 @@ const createSnippet = async () => {
 
     try {
         const token = TokenManager.getToken();
+        const isSubscribed = TokenManager.getSubscribed();
 
         if (!token) {
             vscode.window.showErrorMessage('You need to log in first');
             return;
+        }
+
+        let isPrivate = false;
+
+        if (isSubscribed) {
+            const visibility = await vscode.window.showQuickPick(
+                ['Public', 'Private'],
+                {
+                    placeHolder: 'Select snippet visibility',
+                    title: 'Snippet Visibility'
+                }
+            );
+            if (!visibility) return;
+            isPrivate = visibility === 'Private';
         }
 
         const response = await axios.post('http://localhost:3000/api/v1/snippet/createsnippet', {
@@ -67,7 +82,8 @@ const createSnippet = async () => {
             description,
             tags,
             favorite: false,
-            language
+            language,
+            isPrivate
         }, {
             headers: {
                 'Authorization': token
@@ -75,7 +91,7 @@ const createSnippet = async () => {
         });
 
         if (response.data.success) {
-            vscode.window.showInformationMessage('Snippet created successfully');
+            vscode.window.showInformationMessage(`${isPrivate ? 'Private' : 'Public'} snippet created successfully`);
         } else {
             vscode.window.showErrorMessage('Create snippet error in route');
         }

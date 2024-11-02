@@ -7,17 +7,21 @@ const authenticate = (fn) => {
 
   app.use(express.urlencoded({ extended: true }));
 
-  app.get(`/auth/:token`, async (req, res) => {
-    const { token } = req.params;
+  app.get(`/auth/:token/:isSubscribed`, async (req, res) => {
+    const {token , isSusbcribed} = req.params;
+
     if (!token) {
       res.send(`<h1>Something went wrong</h1>`);
       return;
     }
 
     await TokenManager.setToken(token);
+    await TokenManager.setSubscribed(isSusbcribed)
     fn();
 
-    res.send(`<h1>Authentication was successful, you can close this now</h1>`);
+    res.send(`<h1>Authentication was successful, you can close this now </h1>
+      <h2>${decodedToken} and ${decodedIsSubscribed}</h2>
+      `);
 
     server.close();
   });

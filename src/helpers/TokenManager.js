@@ -1,4 +1,5 @@
 const KEY = "syntaxSnippToken";
+const SUBSCRIBED = "subscription"
 
 class TokenManager {
   static globalState;
@@ -12,7 +13,19 @@ class TokenManager {
   }
 
   static removeToken() {
-    return this.globalState.update(KEY , null);
+    return this.globalState.update(KEY, null);
+  }
+
+  static getSubscribed() {
+    return this.globalState.update(SUBSCRIBED);
+  }
+
+  static setSubscribed(isSubscribed) {
+    return this.globalState.update(SUBSCRIBED, isSubscribed);
+  }
+
+  static removeSubscribed() {
+    return this.globalState.update(SUBSCRIBED, null);
   }
 }
 

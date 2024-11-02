@@ -39,15 +39,22 @@ const updateSnippet = async () => {
             return;
         }
 
-        console.log('Showing fields to update...');
-        const fieldsToUpdate = await vscode.window.showQuickPick([
+        const isSubscribed = TokenManager.getSubscribed();
+        const updateFields = [
             { label: 'Title', value: 'title' },
             { label: 'Description', value: 'description' },
             { label: 'Content', value: 'content' },
             { label: 'Language', value: 'language' },
             { label: 'Favorite', value: 'favorite' },
             { label: 'Tags', value: 'tags' }
-        ], {
+        ];
+
+        if (isSubscribed) {
+            updateFields.push({ label: 'Visibility', value: 'visibility' });
+        }
+
+        console.log('Showing fields to update...');
+        const fieldsToUpdate = await vscode.window.showQuickPick(updateFields, {
             canPickMany: true,
             placeHolder: 'Select fields to update'
         });
@@ -91,7 +98,7 @@ const updateSnippet = async () => {
                                     vscode.window.showInformationMessage('Content update cancelled. No changes made.');
                                     cancelled = true;
                                     break;
-                                } 
+                                }
                                 await new Promise(resolve => setTimeout(resolve, 5000));
                             }
                         }
@@ -99,7 +106,7 @@ const updateSnippet = async () => {
                         if (cancelled) break;
 
                         if (selectedText) {
-                            const useSelectedText = await vscode.window.showQuickPick(['Yes' , 'No'], {
+                            const useSelectedText = await vscode.window.showQuickPick(['Yes', 'No'], {
                                 placeHolder: 'Use selected text as new content?'
                             });
                             if (useSelectedText === 'Yes') {
@@ -129,6 +136,16 @@ const updateSnippet = async () => {
                         });
                         if (tagsInput) updateData.tags = tagsInput.split(',').map(tag => tag.trim());
                         break;
+                    case 'visibility':
+                        const visibilityChoice = await vscode.window.showQuickPick(
+                            ['Public', 'Private'],
+                            {
+                                placeHolder: 'Select snippet visibility',
+                                title: 'Snippet Visibility'
+                            }
+                        );
+                        if (visibilityChoice) updateData.isPrivate = visibilityChoice === 'Private';
+                        break;
                 }
             } catch (fieldError) {
                 console.error(`Error updating field ${field.value}:`, fieldError);
@@ -152,7 +169,10 @@ const updateSnippet = async () => {
             { headers: { 'Authorization': token } }
         );
 
-        vscode.window.showInformationMessage(`Snippet updated successfully: ${updateResponse.data.snippet.title}`);
+        const visibilityStatus = updateData.hasOwnProperty('isPrivate')
+            ? `(${updateData.isPrivate ? 'Private' : 'Public'}) `
+            : '';
+        vscode.window.showInformationMessage(`Snippet ${visibilityStatus}updated successfully: ${updateResponse.data.snippet.title}`);
     } catch (error) {
         console.error('Error in updateSnippet:', error);
         if (error.response) {
